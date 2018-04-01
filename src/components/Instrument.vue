@@ -4,7 +4,7 @@
 
 <script lang="ts">
   import Vue from 'vue';
-  
+
   export default Vue.extend({
     name: 'Instrument',
     props: {
@@ -13,7 +13,6 @@
       },
     },
     data() {
-      console.log(this)
       return { voice: this.voice };
     },
   });
