@@ -42,12 +42,6 @@
       Tone.Transport.stop();
     }
   });
-  
-  var synth = new Tone.Synth().toMaster();
-  var loop = new Tone.Loop(function(time: number){
-    synth.triggerAttackRelease("C3", "8n", time);
-  }, "4n");
-  loop.start();
 
   Tone.Transport.start();
 
