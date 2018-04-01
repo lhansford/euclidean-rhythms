@@ -11,21 +11,15 @@
 </template>
 
 <script lang="ts">
+  import Tone from 'tone';
+
   import EventBus from './eventBus';
   import Controls from './components/Controls.vue';
   import Instrument from './components/Instrument.vue';
   import MasterClock from './components/MasterClock.vue';
 
   const SINE = 'sine';
-
-  const audioContext = new AudioContext(); // TODO: Do this for other browsers https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_Web_Audio_API
-  var oscillator = audioContext.createOscillator();
-  var gainNode = audioContext.createGain();
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  oscillator.type = 'sine'; // sine wave — other values are 'square', 'sawtooth', 'triangle' and 'custom'
-  oscillator.frequency.value = 1500; // value in hertz
-  // oscillator.start();
+  
 
   const baseInstrument = {
     voice: SINE,
@@ -42,7 +36,20 @@
 
   EventBus.$on('setIsPlaying', (isPlaying: boolean) => {
     state.isPlaying = isPlaying;
+    if (isPlaying) {
+      Tone.Transport.start();
+    } else {
+      Tone.Transport.stop();
+    }
   });
+  
+  var synth = new Tone.Synth().toMaster();
+  var loop = new Tone.Loop(function(time: number){
+    synth.triggerAttackRelease("C3", "8n", time);
+  }, "4n");
+  loop.start();
+
+  Tone.Transport.start();
 
   export default {
     name: 'App',
