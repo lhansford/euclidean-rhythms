@@ -23,8 +23,8 @@
 
   const baseInstrument = {
     voice: SINE,
-    steps: 4,
-    triggers: 4,
+    steps: 8,
+    triggers: 3,
     rotation: 0,
   };
 
@@ -43,7 +43,13 @@
     }
   });
 
+  EventBus.$on('setMasterClock', (bpm: number) => {
+    state.masterClock = bpm;
+    Tone.Transport.bpm.rampTo(bpm, 5);
+  });
+
   Tone.Transport.start();
+
 
   export default {
     name: 'App',
