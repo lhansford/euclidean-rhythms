@@ -1,10 +1,11 @@
 <template>
 	<div id="app">
 		<h1>Euclidean Rhythms</h1>
+    {{ currentNote }}
     <controls v-bind:isPlaying="isPlaying"></controls>
     <master-clock v-bind:clock="masterClock"></master-clock>
-    <div v-for="instrument in instruments">
-      <instrument v-bind="instrument"></instrument>
+    <div v-for="instrument in instruments" v-bind:key="instrument._id">
+      <instrument v-bind="instrument" v-bind:masterClockStep="masterClockStep"></instrument>
     </div>
     <button v-if="instruments.length < 6" v-on:click="addInstrument">Add Instrument</button>
 	</div>
@@ -18,20 +19,13 @@
   import Instrument from './components/Instrument.vue';
   import MasterClock from './components/MasterClock.vue';
 
-  const SINE = 'sine';
-  
-
-  const baseInstrument = {
-    voice: SINE,
-    steps: 8,
-    triggers: 3,
-    rotation: 0,
-  };
+  let lastId = 0;
 
   const state = {
     masterClock: 120,
-    instruments: [Object.assign({}, baseInstrument)],
+    instruments: [{ _id: 0 }],
     isPlaying: true,
+    masterClockStep: 0,
   };
 
   EventBus.$on('setIsPlaying', (isPlaying: boolean) => {
@@ -49,7 +43,9 @@
   });
 
   Tone.Transport.start();
-
+  Tone.Transport.scheduleRepeat(function(time: any){
+    state.masterClockStep = state.masterClockStep === 7 ? 0 : state.masterClockStep + 1;
+  }, "8n");
 
   export default {
     name: 'App',
@@ -62,7 +58,7 @@
     methods: {
       addInstrument: function() {
         if (state.instruments.length < 6) {
-          state.instruments.push(Object.assign({}, baseInstrument));
+          state.instruments.push({ _id: ++lastId });
         }
       },
     },
