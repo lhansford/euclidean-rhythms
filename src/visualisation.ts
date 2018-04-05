@@ -1,15 +1,18 @@
-function getPolygonPoints(sides: number) {
-  if (sides === 6) {
-    return [[60,20], [100,40], [100,80], [60,100], [20,80], [20,40]];
+
+export function getPolygonPoints(sides: number, radius: number) {
+  let i = 0;
+  const points = [];
+  while (i < sides) {
+    const point = [
+      radius * Math.cos(2 * Math.PI * i / sides) + radius,
+      radius * Math.sin(2 * Math.PI * i / sides) + radius,
+    ];
+    points.push(point);
+    i += 1;
   }
-  return [];
+  return points
 }
 
-export function getPolygonPointsAsString(sides: number) {
-  return getPolygonPoints(sides).map(x => x.join(',')).join(' ');
-}
-
-export function getLineStart(sides: number, currentNote: number) {
-  const points = getPolygonPoints(sides);
-  return points[currentNote];
+export function polygonPointsToString(points: Array<Array<number>>) {
+  return points.map(x => x.join(',')).join(' ');
 }

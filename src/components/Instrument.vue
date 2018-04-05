@@ -1,6 +1,6 @@
 <template>
   <div>
-    <instrument-visualisation :currentStep="currentStep"></instrument-visualisation>
+    <instrument-visualisation :currentStep="currentStep" :steps="steps"></instrument-visualisation>
     <input v-model.number="triggers" type="number">
     <input v-model.number="steps" type="number">
     <p>e({{ triggers }}, {{ steps }})</p>
