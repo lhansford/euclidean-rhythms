@@ -13,6 +13,6 @@ export function getPolygonPoints(sides: number, radius: number) {
   return points
 }
 
-export function polygonPointsToString(points: Array<Array<number>>) {
+export function polygonPointsToString(points: Array<Array<number>>): string {
   return points.map(x => x.join(',')).join(' ');
 }

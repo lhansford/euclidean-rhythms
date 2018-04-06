@@ -45,6 +45,7 @@
   Tone.Transport.start();
   Tone.Transport.scheduleRepeat(function(time: any){
     state.masterClockStep = state.masterClockStep === 7 ? 0 : state.masterClockStep + 1;
+    // console.log(state.masterClockStep)
   }, "8n");
 
   export default {

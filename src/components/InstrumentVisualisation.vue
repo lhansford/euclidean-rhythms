@@ -1,7 +1,10 @@
 <template>
   <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <polygon :points="points" style="fill:transparent;stroke:black;stroke-width:1" />
-    <line :x1="x1" :y1="y1" :x2="x2" :y2="y2" style="stroke:rgb(255,0,0);stroke-width:2" />
+    <svg v-for="trigger in points.triggerPoints">
+      <polygon :points="trigger" style="fill:black;" />
+    </svg>
+    <polygon :points="points.polygonPoints" style="fill:transparent;stroke:black;stroke-width:1" />
+    <polygon :points="points.currentStepPoints" style="fill:rgb(255,0,0);" />
   </svg>
 </template>
 
@@ -9,6 +12,15 @@
   import Vue from 'vue';
 
   import { polygonPointsToString, getPolygonPoints } from './../visualisation.ts';
+  import { getEuclideanBinary } from './../euclidean.ts';
+
+  function getStepPoints(currentStep: number, pointsArray: Array<Array<number>>) {
+    const nextStep = currentStep > pointsArray.length - 2 ? 0 : currentStep + 1;
+    console.log(currentStep)
+    console.log(nextStep)
+    console.log(pointsArray)
+    return [[100, 100], pointsArray[currentStep], pointsArray[nextStep]];
+  }
 
   export default Vue.extend({
     name: 'InstrumentVisualisation',
@@ -19,30 +31,29 @@
       steps: {
         type: Number,
       },
+      triggers: {
+        type: Number,
+      },
     },
     data: function () {
-      return { pointsArray: getPolygonPoints(this.steps, 100) };
+      return {
+        pointsArray: getPolygonPoints(this.steps, 100),
+      };
     },
     computed: {
-      x1: function(): number {
-        return this.pointsArray[this.currentStep][0]
-      },
-      y1: function(): number {
-        return this.pointsArray[this.currentStep][1]
-      },
-      x2: function(): number {
-        const step = this.currentStep > this.steps - 2 ? 0 : this.currentStep + 1;
-        console.log(step)
-        return this.pointsArray[step][0]
-      },
-      y2: function(): number {
-        const step = this.currentStep > this.steps - 2 ? 0 : this.currentStep + 1;
-        return this.pointsArray[step][1]
-      },
-      points: function() {
+      points: function(): {} {
         this.pointsArray = getPolygonPoints(this.steps, 100);
-        return polygonPointsToString(this.pointsArray);
-      }
+        const binary = getEuclideanBinary(this.steps, this.triggers).split('');
+        binary.unshift(binary.pop()) // Rotate 1 because ???
+        return {
+          currentStepPoints: polygonPointsToString(getStepPoints(this.currentStep, this.pointsArray)),
+          polygonPoints: polygonPointsToString(this.pointsArray),
+          triggerPoints: binary
+            .map((step: string, index: number) => (step === '0' ? [] : getStepPoints(index, this.pointsArray)))
+            .filter((x: Array<Array<number>>) => x.length)
+            .map((x: Array<Array<number>>) => polygonPointsToString(x)),
+        };
+      },
     },
   });
 </script>

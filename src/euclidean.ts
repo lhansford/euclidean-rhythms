@@ -1,7 +1,4 @@
-
-
-
-function getEuclideanBinary(steps: number, triggers: number) {
+export function getEuclideanBinary(steps: number, triggers: number) {
   let zeroes = steps - triggers;
   const triggerArrays = Array(triggers).fill('1');
   let currentArrayIndex = 0;
