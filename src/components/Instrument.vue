@@ -1,6 +1,6 @@
 <template>
   <div>
-    <instrument-visualisation :currentStep="currentStep" :steps="steps" :triggers="triggers"></instrument-visualisation>
+    <instrument-visualisation :currentStep="currentStep" :steps="stepsAsNumber" :triggers="triggersAsNumber"></instrument-visualisation>
     <input v-model.number="triggers" type="number">
     <input v-model.number="steps" type="number">
     <p>Voice: {{ voiceType }}</p>
@@ -22,10 +22,14 @@
     rotation: number | string,
     part: void | any,
     currentStep: number,
+    stepsAsNumber: number,
+    triggersAsNumber: number,
   } = {
     voiceType: SINE,
-    steps: 6,
-    triggers: 4,
+    steps: 8,
+    triggers: 3,
+    stepsAsNumber: 8, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
+    triggersAsNumber: 3, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
     rotation: 0,
     currentStep: 0,
     part: undefined,
@@ -91,9 +95,7 @@
     },
     watch: {
       masterClockStep: function() {
-        if (typeof(this.steps) === 'string') {
-          this.currentStep = 0;
-        } else if (this.currentStep >= this.steps - 1) {
+        if (this.currentStep >= this.stepsAsNumber - 1) {
           this.currentStep = 0;
         } else {
           this.currentStep += 1;
@@ -102,6 +104,7 @@
       },
       steps: function() {
         if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string') {
+          this.stepsAsNumber = this.steps;
           const part = this.part;
           if (part !== undefined) {
             part.dispose();
@@ -111,6 +114,7 @@
       },
       triggers: function() {
         if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string') {
+          this.triggersAsNumber = this.triggers;
           if (this.part !== undefined) {
             this.part.dispose();
           }

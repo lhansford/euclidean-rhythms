@@ -1,9 +1,9 @@
 <template>
 	<div id="app">
 		<h1>Euclidean Rhythms</h1>
-    {{ currentNote }}
     <controls v-bind:isPlaying="isPlaying"></controls>
-    <master-clock v-bind:clock="masterClock"></master-clock>
+    <input v-model.number="masterClockInput" type="number">
+    <button v-on:click="setMasterClock">Set</button>
     <section class="instruments">
       <div v-for="instrument in instruments" v-bind:key="instrument._id">
         <instrument v-bind="instrument" v-bind:masterClockStep="masterClockStep"></instrument>
@@ -19,12 +19,20 @@
   import EventBus from './eventBus';
   import Controls from './components/Controls.vue';
   import Instrument from './components/Instrument.vue';
-  import MasterClock from './components/MasterClock.vue';
 
   let lastId = 0;
 
-  const state = {
+  type State = {
+    masterClockInput: string | number,
+    masterClock: number,
+    isPlaying: boolean,
+    masterClockStep: number,
+    instruments: Array<{ _id: number }>,
+  };
+
+  const state: State = {
     masterClock: 120,
+    masterClockInput: 120,
     instruments: [{ _id: 0 }],
     isPlaying: true,
     masterClockStep: 0,
@@ -39,11 +47,6 @@
     }
   });
 
-  EventBus.$on('setMasterClock', (bpm: number) => {
-    state.masterClock = bpm;
-    Tone.Transport.bpm.rampTo(bpm, 5);
-  });
-
   Tone.Transport.start();
   Tone.Transport.scheduleRepeat(function(time: any){
     state.masterClockStep = state.masterClockStep === 7 ? 0 : state.masterClockStep + 1;
@@ -55,7 +58,6 @@
     data() { return state },
     components: {
       Controls,
-      MasterClock,
       Instrument,
     },
     methods: {
@@ -64,6 +66,12 @@
           state.instruments.push({ _id: ++lastId });
         }
       },
+      setMasterClock: function() {
+        if (typeof(state.masterClockInput) !== 'string' && state.masterClockInput > 0) {
+          state.masterClock = state.masterClockInput;
+          Tone.Transport.bpm.rampTo(state.masterClock, 1);
+        }
+      }
     },
   }
 </script>

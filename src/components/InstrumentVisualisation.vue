@@ -16,9 +16,6 @@
 
   function getStepPoints(currentStep: number, pointsArray: Array<Array<number>>) {
     const nextStep = currentStep > pointsArray.length - 2 ? 0 : currentStep + 1;
-    console.log(currentStep)
-    console.log(nextStep)
-    console.log(pointsArray)
     return [[100, 100], pointsArray[currentStep], pointsArray[nextStep]];
   }
 
@@ -42,6 +39,8 @@
     },
     computed: {
       points: function(): {} {
+        console.log(this)
+        console.log(this.steps)
         this.pointsArray = getPolygonPoints(this.steps, 100);
         const binary = getEuclideanBinary(this.steps, this.triggers).split('');
         binary.unshift(binary.pop()) // Rotate 1 because ???
