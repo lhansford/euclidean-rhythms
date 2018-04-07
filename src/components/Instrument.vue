@@ -3,7 +3,6 @@
     <instrument-visualisation :currentStep="currentStep" :steps="steps" :triggers="triggers"></instrument-visualisation>
     <input v-model.number="triggers" type="number">
     <input v-model.number="steps" type="number">
-    <p>e({{ triggers }}, {{ steps }})</p>
     <p>Voice: {{ voiceType }}</p>
   </div>
 </template>

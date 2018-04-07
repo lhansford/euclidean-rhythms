@@ -4,9 +4,11 @@
     {{ currentNote }}
     <controls v-bind:isPlaying="isPlaying"></controls>
     <master-clock v-bind:clock="masterClock"></master-clock>
-    <div v-for="instrument in instruments" v-bind:key="instrument._id">
-      <instrument v-bind="instrument" v-bind:masterClockStep="masterClockStep"></instrument>
-    </div>
+    <section class="instruments">
+      <div v-for="instrument in instruments" v-bind:key="instrument._id">
+        <instrument v-bind="instrument" v-bind:masterClockStep="masterClockStep"></instrument>
+      </div>
+    </section>
     <button v-if="instruments.length < 6" v-on:click="addInstrument">Add Instrument</button>
 	</div>
 </template>
@@ -65,3 +67,10 @@
     },
   }
 </script>
+
+<style scoped>
+  .instruments {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+</style>

@@ -57,11 +57,3 @@
     },
   });
 </script>
-
-<style scoped>
-  .polygon {
-    background: red;
-    height: 100px;
-    width: 100px;
-  }
-</style>
