@@ -31,6 +31,9 @@
       triggers: {
         type: Number,
       },
+      rotation: {
+        type: Number,
+      }
     },
     data: function () {
       return {
@@ -39,10 +42,8 @@
     },
     computed: {
       points: function(): {} {
-        console.log(this)
-        console.log(this.steps)
         this.pointsArray = getPolygonPoints(this.steps, 100);
-        const binary = getEuclideanBinary(this.steps, this.triggers).split('');
+        const binary = getEuclideanBinary(this.steps, this.triggers, this.rotation).split('');
         binary.unshift(binary.pop()) // Rotate 1 because ???
         return {
           currentStepPoints: polygonPointsToString(getStepPoints(this.currentStep, this.pointsArray)),

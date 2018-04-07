@@ -1,8 +1,9 @@
 <template>
   <div>
-    <instrument-visualisation :currentStep="currentStep" :steps="stepsAsNumber" :triggers="triggersAsNumber"></instrument-visualisation>
+    <instrument-visualisation :currentStep="currentStep" :steps="stepsAsNumber" :triggers="triggersAsNumber" :rotation="rotationAsNumber"></instrument-visualisation>
     <input v-model.number="triggers" type="number">
     <input v-model.number="steps" type="number">
+    <input v-model.number="rotation" type="number">
     <p>Voice: {{ voiceType }}</p>
   </div>
 </template>
@@ -24,12 +25,14 @@
     currentStep: number,
     stepsAsNumber: number,
     triggersAsNumber: number,
+    rotationAsNumber: number,
   } = {
     voiceType: SINE,
-    steps: 8,
-    triggers: 3,
-    stepsAsNumber: 8, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
-    triggersAsNumber: 3, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
+    steps: 3,
+    triggers: 1,
+    stepsAsNumber: 3, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
+    triggersAsNumber: 1, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
+    rotationAsNumber: 0, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
     rotation: 0,
     currentStep: 0,
     part: undefined,
@@ -56,12 +59,12 @@
     return voice;
   }
 
-  function createPart(voice: any, steps: number, triggers: number, note: string) {
+  function createPart(voice: any, steps: number, triggers: number, rotation: number, note: string) {
     console.log('create part')
-    console.log(getPart(steps, triggers, 0, note))
+    console.log(getPart(steps, triggers, rotation, note))
     const part = new Tone.Part(function(time: any, note: any){
       voice.triggerAttackRelease(note, "16n", time);
-    }, getPart(steps, triggers, 0, note));
+    }, getPart(steps, triggers, rotation, note));
     part.loop = true;
     part.loopEnd = `0:${steps}`;
     part.playbackRate = 2;
@@ -82,8 +85,8 @@
       },
     },
     created: function () {
-      if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string') {
-        this.part = createPart(this.voice, this.steps, this.triggers, this.note);
+      if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string' && typeof(this.rotation) !== 'string') {
+        this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
       }
     },
     data() {
@@ -100,25 +103,35 @@
         } else {
           this.currentStep += 1;
         }
-        // console.log(`I: ${this.currentStep}`)
+        console.log(`I: ${this.currentStep}`);
       },
       steps: function() {
-        if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string') {
+        if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string' && typeof(this.rotation) !== 'string') {
           this.stepsAsNumber = this.steps;
           const part = this.part;
           if (part !== undefined) {
             part.dispose();
           }
-          this.part = createPart(this.voice, this.steps, this.triggers, this.note);
+          this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
+          this.currentStep = 0; // Reset current step.
         }
       },
       triggers: function() {
-        if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string') {
+        if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string' && typeof(this.rotation) !== 'string') {
           this.triggersAsNumber = this.triggers;
           if (this.part !== undefined) {
             this.part.dispose();
           }
-          this.part = createPart(this.voice, this.steps, this.triggers, this.note);
+          this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
+        }
+      },
+      rotation: function() {
+        if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string' && typeof(this.rotation) !== 'string') {
+          this.rotationAsNumber = this.rotation;
+          if (this.part !== undefined) {
+            this.part.dispose();
+          }
+          this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
         }
       },
     }
