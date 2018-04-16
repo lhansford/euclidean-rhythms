@@ -21,9 +21,6 @@ export function getEuclideanBinary(steps: number, triggers: number, rotation: nu
     zeroes -= 1;
   }
   const pattern = triggerArrays.reduce((prev, curr) => prev + curr, '');
-  console.log(safeRotation)
-  console.log(pattern)
-  console.log(safeRotation === 0 ? pattern : pattern.slice(-safeRotation) + pattern.slice(0, pattern.length - safeRotation))
   return safeRotation === 0 ? pattern : pattern.slice(-safeRotation) + pattern.slice(0, pattern.length - safeRotation);
 }
 

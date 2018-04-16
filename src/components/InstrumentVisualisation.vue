@@ -42,11 +42,11 @@
     },
     computed: {
       points: function(): {} {
+        console.log('VIZ: ' + this.currentStep)
         this.pointsArray = getPolygonPoints(this.steps, 100);
         const binary = getEuclideanBinary(this.steps, this.triggers, this.rotation).split('');
-        binary.unshift(binary.pop()) // Rotate 1 because ???
         return {
-          currentStepPoints: polygonPointsToString(getStepPoints(this.currentStep, this.pointsArray)),
+          currentStepPoints: polygonPointsToString(getStepPoints(this.currentStep - 1, this.pointsArray)),
           polygonPoints: polygonPointsToString(this.pointsArray),
           triggerPoints: binary
             .map((step: string, index: number) => (step === '0' ? [] : getStepPoints(index, this.pointsArray)))

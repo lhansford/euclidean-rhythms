@@ -29,13 +29,13 @@
     masterClockStep: number,
     instruments: Array<{ _id: number }>,
   };
-
+ Tone.Transport.bpm.rampTo(60, 1);
   const state: State = {
-    masterClock: 120,
-    masterClockInput: 120,
+    masterClock: 60,
+    masterClockInput: 60,
     instruments: [{ _id: 0 }],
     isPlaying: true,
-    masterClockStep: 0,
+    masterClockStep: 1, // Start from 1 to match how its usually counted in music.
   };
 
   EventBus.$on('setIsPlaying', (isPlaying: boolean) => {
@@ -43,15 +43,14 @@
     if (isPlaying) {
       Tone.Transport.start();
     } else {
-      Tone.Transport.stop();
+      Tone.Transport.pause();
     }
   });
 
   Tone.Transport.start();
   Tone.Transport.scheduleRepeat(function(time: any){
-    state.masterClockStep = state.masterClockStep === 7 ? 0 : state.masterClockStep + 1;
-    // console.log(state.masterClockStep)
-  }, "8n");
+    state.masterClockStep = state.masterClockStep === 16 ? 1 : state.masterClockStep + 1; // Working in 4/4 with 16ths.
+  }, "16n");
 
   export default {
     name: 'App',
