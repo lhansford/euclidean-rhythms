@@ -42,7 +42,6 @@
     },
     computed: {
       points: function(): {} {
-        console.log('VIZ: ' + this.currentStep)
         this.pointsArray = getPolygonPoints(this.steps, 100);
         const binary = getEuclideanBinary(this.steps, this.triggers, this.rotation).split('');
         return {
