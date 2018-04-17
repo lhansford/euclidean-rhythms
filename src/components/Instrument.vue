@@ -47,7 +47,7 @@
     triggersAsNumber: 3, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
     rotationAsNumber: 0, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
     rotation: 0,
-    currentStep: 1, // Working with 1-indexing to match music usage.
+    currentStep: 4, // Working with 1-indexing to match music usage. Start on last step so we move to first step on first tick.
     part: undefined,
     voiceOptions: VOICES,
     selectedVoice: VOICES[0].value,
@@ -64,7 +64,6 @@
   }
 
   function createPart(voice: any, steps: number, triggers: number, rotation: number, note: string) {
-    // voice.sync();
     const part = new Tone.Part(function(time: any, note: any){
       voice.useNote ?
         voice.triggerAttackRelease(note, "16n", time) :
@@ -72,7 +71,7 @@
     }, getPart(steps, triggers, rotation, note));
     part.loop = true;
     part.loopEnd = `0:${steps}`;
-    part.playbackRate = 4;
+    part.playbackRate = 2;
     return part;
   }
 
@@ -87,7 +86,6 @@
       },
     },
     created: function () {
-      this.currentStep = this.masterClockStep % this.stepsAsNumber;
       if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string' && typeof(this.rotation) !== 'string') {
         this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
       }
@@ -101,16 +99,19 @@
     },
     watch: {
       masterClockStep: function() {
+        // console.log(this.masterClockStep)
         if (this.currentStep >= this.stepsAsNumber) {
           this.currentStep = 1;
         } else {
           this.currentStep += 1;
         }
-        if (this.currentStep === 1 && this.part && this.part.state !== 'started') {
+        if (this.masterClockStep % this.stepsAsNumber === 0 && this.part && this.part.state !== 'started') {
           // This is used only when changing steps as it allows us to await the master clock catching
           // up to the step of this instrument.
           this.part.start();
+          this.currentStep = 1;
         }
+        console.log(this.currentStep)
       },
       steps: function() {
         if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string' && typeof(this.rotation) !== 'string') {
@@ -119,7 +120,7 @@
           if (part !== undefined) {
             part.dispose();
           }
-          this.currentStep = 1; // Reset current step.
+          // this.currentStep = 1; // Reset current step.
           this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
         }
       },
@@ -130,7 +131,7 @@
             this.part.dispose();
           }
           this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
-          this.part.start();
+          // this.part.start();
         }
       },
       rotation: function() {
@@ -140,7 +141,7 @@
             this.part.dispose();
           }
           this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
-          this.part.start();
+          // this.part.start();
         }
       },
       selectedVoice: function () {

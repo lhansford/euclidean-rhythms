@@ -43,8 +43,9 @@
 
   Tone.Transport.start();
   Tone.Transport.scheduleRepeat(function(time: any){
-    state.masterClockStep = state.masterClockStep === 16 ? 1 : state.masterClockStep + 1; // Working in 4/4 with 16ths.
-  }, "16n");
+    // state.masterClockStep = state.masterClockStep === 8 ? 1 : state.masterClockStep + 1; // Working in 4/4 with 8ths.
+    state.masterClockStep += 1;
+  }, "8n");
 
   export default {
     name: 'App',
