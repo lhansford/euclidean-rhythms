@@ -41,9 +41,9 @@
     voiceOptions: Array<{ value: string, label: string}>,
     selectedVoice: string,
   } = {
-    steps: 8,
+    steps: 4,
     triggers: 3,
-    stepsAsNumber: 8, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
+    stepsAsNumber: 4, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
     triggersAsNumber: 3, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
     rotationAsNumber: 0, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
     rotation: 0,
