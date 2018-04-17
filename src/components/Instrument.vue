@@ -1,10 +1,22 @@
 <template>
-  <div>
-    <instrument-visualisation :currentStep="currentStep" :steps="stepsAsNumber" :triggers="triggersAsNumber" :rotation="rotationAsNumber"></instrument-visualisation>
-    <input v-model.number="triggers" type="number">
-    <input v-model.number="steps" type="number">
-    <input v-model.number="rotation" type="number">
-    <p>Voice: {{ voiceType }}</p>
+  <div class="c-instrument">
+    <div class="c-instrument__visualisation">
+      <instrument-visualisation :currentStep="currentStep" :steps="stepsAsNumber" :triggers="triggersAsNumber" :rotation="rotationAsNumber"></instrument-visualisation>
+    </div>
+    <div class="c-instrument__form">
+      <label for="voice">Sound</label>
+      <select id="voice" v-model="selectedVoice">
+        <option v-for="option in voiceOptions" v-bind:value="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+      <label for="triggers">Triggers</label>
+      <input id="triggers" v-model.number="triggers" type="number">
+      <label for="steps">Steps</label>
+      <input id="steps" v-model.number="steps" type="number">
+      <label for="rotation">Rotation</label>
+      <input id="rotation" v-model.number="rotation" type="number">
+    </div>
   </div>
 </template>
 
@@ -15,6 +27,8 @@
   import InstrumentVisualisation from './InstrumentVisualisation.vue';
   import EventBus from './../eventBus';
   import { getPart } from './../euclidean';
+  import { getVoice } from './../voices';
+
   const SINE = 'sine';
   const defaultState: {
     voiceType: string,
@@ -26,6 +40,8 @@
     stepsAsNumber: number,
     triggersAsNumber: number,
     rotationAsNumber: number,
+    voiceOptions: Array<{ value: string, label: string}>,
+    selectedVoice: string,
   } = {
     voiceType: SINE,
     steps: 8,
@@ -36,6 +52,11 @@
     rotation: 0,
     currentStep: 1, // Working with 1-indexing to match music usage.
     part: undefined,
+    voiceOptions: [
+      { value: '1', label: '1' },
+      { value: '2', label: '2' },
+    ],
+    selectedVoice: '1',
   };
 
   function getRandomInt(max: number) {
@@ -43,24 +64,17 @@
   }
 
   function getNote() {
-    const index = getRandomInt(10);
-    const notes = ['C6', 'C7', 'C3', 'C4', 'C5', 'E6', 'E7', 'E3', 'E4', 'E5']
+    const index = getRandomInt(3);
+    const notes = ['C3', 'C4', 'E3']
     return notes[index];
   }
 
-  function createVoice() {
-    const reverb = new Tone.Freeverb(0.5).toMaster();
-    const voice = new Tone.PluckSynth({
-      // attackNoise: 1,
-      // dampening: 4000,
-      // resonance: Math.random(),
-    }).connect(reverb);
-    return voice;
-  }
-
   function createPart(voice: any, steps: number, triggers: number, rotation: number, note: string) {
+    // voice.sync();
     const part = new Tone.Part(function(time: any, note: any){
-      voice.triggerAttackRelease(note, "16n", time);
+      voice.useNote ?
+        voice.triggerAttackRelease(note, "16n", time) :
+        voice.triggerAttackRelease("16n", time);
     }, getPart(steps, triggers, rotation, note));
     part.loop = true;
     part.loopEnd = `0:${steps}`;
@@ -88,7 +102,7 @@
       return Object.assign(
         {},
         defaultState,
-        { voice: createVoice(), note: getNote(), },
+        { voice: getVoice('1'), note: getNote(), },
       );
     },
     watch: {
@@ -135,6 +149,28 @@
           this.part.start();
         }
       },
+      selectedVoice: function () {
+        // TODO: Fix this
+        // if (this.voice !== undefined) {
+        //   this.voice.dispose();
+        // }
+        this.voice = getVoice(this.selectedVoice);
+        if (this.part !== undefined) {
+          this.part.dispose();
+        }
+        this.part = createPart(this.voice, this.stepsAsNumber, this.triggersAsNumber, this.rotationAsNumber, this.note);
+      }
     }
   });
 </script>
+
+<style scoped>
+  .c-instrument {
+    display: flex;
+  }
+
+  .c-instrument__form {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
