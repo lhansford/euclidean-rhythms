@@ -27,11 +27,9 @@
   import InstrumentVisualisation from './InstrumentVisualisation.vue';
   import EventBus from './../eventBus';
   import { getPart } from './../euclidean';
-  import { getVoice } from './../voices';
+  import { getVoice, VOICES } from './../voices';
 
-  const SINE = 'sine';
   const defaultState: {
-    voiceType: string,
     steps: number | string,
     triggers: number | string,
     rotation: number | string,
@@ -43,7 +41,6 @@
     voiceOptions: Array<{ value: string, label: string}>,
     selectedVoice: string,
   } = {
-    voiceType: SINE,
     steps: 8,
     triggers: 3,
     stepsAsNumber: 8, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
@@ -52,10 +49,7 @@
     rotation: 0,
     currentStep: 1, // Working with 1-indexing to match music usage.
     part: undefined,
-    voiceOptions: [
-      { value: '1', label: '1' },
-      { value: '2', label: '2' },
-    ],
+    voiceOptions: VOICES,
     selectedVoice: '1',
   };
 

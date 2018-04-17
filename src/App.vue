@@ -40,11 +40,7 @@
 
   EventBus.$on('setIsPlaying', (isPlaying: boolean) => {
     state.isPlaying = isPlaying;
-    if (isPlaying) {
-      Tone.Transport.start();
-    } else {
-      Tone.Transport.pause();
-    }
+    isPlaying ? Tone.Transport.start() : Tone.Transport.pause();
   });
 
   Tone.Transport.bpm.value = state.masterClock;
