@@ -50,7 +50,7 @@
     currentStep: 1, // Working with 1-indexing to match music usage.
     part: undefined,
     voiceOptions: VOICES,
-    selectedVoice: '1',
+    selectedVoice: VOICES[0].value,
   };
 
   function getRandomInt(max: number) {
@@ -96,7 +96,7 @@
       return Object.assign(
         {},
         defaultState,
-        { voice: getVoice('1'), note: getNote(), },
+        { voice: getVoice(defaultState.selectedVoice), note: getNote(), },
       );
     },
     watch: {

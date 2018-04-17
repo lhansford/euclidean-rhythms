@@ -1,10 +1,11 @@
 <template>
-	<div id="app">
-		<h1>Euclidean Rhythms</h1>
-    <controls v-bind:isPlaying="isPlaying"></controls>
-    <input v-model.number="masterClockInput" type="number">
-    <button v-on:click="setMasterClock">Set</button>
-    <section class="instruments">
+	<div id="app" class="c-main">
+		<h1 class="c-main__title">Euclidean Rhythms</h1>
+    <div class="c-controls">
+      <controls v-bind:isPlaying="isPlaying"></controls>
+      <clock></clock>
+    </div>
+    <section class="c-instruments">
       <div v-for="instrument in instruments" v-bind:key="instrument._id">
         <instrument v-bind="instrument" v-bind:masterClockStep="masterClockStep"></instrument>
       </div>
@@ -18,21 +19,18 @@
 
   import EventBus from './eventBus';
   import Controls from './components/Controls.vue';
+  import Clock from './components/Clock.vue';
   import Instrument from './components/Instrument.vue';
 
   let lastId = 0;
 
   type State = {
-    masterClockInput: string | number,
-    masterClock: number,
     isPlaying: boolean,
     masterClockStep: number,
     instruments: Array<{ _id: number }>,
   };
 
   const state: State = {
-    masterClock: 90,
-    masterClockInput: 90,
     instruments: [{ _id: 0 }],
     isPlaying: true,
     masterClockStep: 1, // Start from 1 to match how its usually counted in music.
@@ -43,7 +41,6 @@
     isPlaying ? Tone.Transport.start() : Tone.Transport.pause();
   });
 
-  Tone.Transport.bpm.value = state.masterClock;
   Tone.Transport.start();
   Tone.Transport.scheduleRepeat(function(time: any){
     state.masterClockStep = state.masterClockStep === 16 ? 1 : state.masterClockStep + 1; // Working in 4/4 with 16ths.
@@ -55,17 +52,12 @@
     components: {
       Controls,
       Instrument,
+      Clock,
     },
     methods: {
       addInstrument: function() {
         if (state.instruments.length < 6) {
           state.instruments.push({ _id: ++lastId });
-        }
-      },
-      setMasterClock: function() {
-        if (typeof(state.masterClockInput) !== 'string' && state.masterClockInput > 0) {
-          state.masterClock = state.masterClockInput;
-          Tone.Transport.bpm.rampTo(state.masterClock, 1);
         }
       }
     },
@@ -73,8 +65,26 @@
 </script>
 
 <style scoped>
-  .instruments {
+  .c-main {
+    background-image: linear-gradient(to top, #09203f 0%, #537895 100%);
+    min-height: 100vh;
+    color: white;
+    font-family: monospace;
+  }
+
+  .c-main__title {
+    text-align: center;
+    padding: 1em;
+    font-size: 2em;
+  }
+  
+  .c-instruments {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
   }
+
+  .c-controls {
+    display: flex;
+  }
+
 </style>

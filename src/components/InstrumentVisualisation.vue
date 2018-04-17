@@ -1,11 +1,13 @@
 <template>
-  <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <svg v-for="trigger in points.triggerPoints">
-      <polygon :points="trigger" style="fill:black;" />
+  <div class="c-visualisation">
+    <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <svg v-for="trigger in points.triggerPoints">
+        <polygon :points="trigger" style="fill:black;" />
+      </svg>
+      <!-- <polygon :points="points.polygonPoints" style="fill:transparent;stroke:black;stroke-width:1" /> -->
+      <polygon :points="points.currentStepPoints" style="fill:#FF9A00;" />
     </svg>
-    <polygon :points="points.polygonPoints" style="fill:transparent;stroke:black;stroke-width:1" />
-    <polygon :points="points.currentStepPoints" style="fill:rgb(255,0,0);" />
-  </svg>
+  </div>
 </template>
 
 <script lang="ts">
@@ -56,3 +58,9 @@
     },
   });
 </script>
+
+<style scoped>
+  .c-visualisation {
+    margin: 1em;
+  }
+</style>

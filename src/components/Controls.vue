@@ -1,6 +1,10 @@
 <template>
-  <button v-if="!isPlaying" @click="play">Play</button>
-  <button v-else @click="stop">Stop</button>
+  <button v-if="!isPlaying" @click="play">
+    <i class="far fa-play-circle"></i>
+  </button>
+  <button v-else @click="stop">
+    <i class="far fa-pause-circle"></i>
+  </button>
 </template>
 
 <script lang="ts">
