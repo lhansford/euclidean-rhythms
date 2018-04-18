@@ -17,6 +17,7 @@
       <label for="rotation">Rotation</label>
       <input id="rotation" v-model.number="rotation" type="number">
     </div>
+    <p class="c-instrument__description" v-if="description">{{ description }}</p>
   </div>
 </template>
 
@@ -27,6 +28,7 @@
   import InstrumentVisualisation from './InstrumentVisualisation.vue';
   import EventBus from './../eventBus';
   import { getPart } from './../euclidean';
+  import { getRhythm } from './../rhythms';
   import { getVoice, VOICES } from './../voices';
 
   const defaultState: {
@@ -41,23 +43,23 @@
     voiceOptions: Array<{ value: string, label: string}>,
     selectedVoice: string,
   } = {
-    steps: 4,
-    triggers: 3,
-    stepsAsNumber: 4, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
-    triggersAsNumber: 3, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
+    steps: 8,
+    triggers: 5,
+    stepsAsNumber: 8, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
+    triggersAsNumber: 5, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
     rotationAsNumber: 0, // Because subcomponents rely on this being a number, but actual value can change to string due to HTML input.
     rotation: 0,
-    currentStep: 4, // Working with 1-indexing to match music usage. Start on last step so we move to first step on first tick.
+    currentStep: 8, // Working with 1-indexing to match music usage. Start on last step so we move to first step on first tick.
     part: undefined,
     voiceOptions: VOICES,
     selectedVoice: VOICES[0].value,
   };
 
-  function getRandomInt(max: number) {
+  function getRandomInt(max: number): number {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  function getNote() {
+  function getNote(): string {
     const index = getRandomInt(3);
     const notes = ['C3', 'C4', 'E3']
     return notes[index];
@@ -97,65 +99,56 @@
         { voice: getVoice(defaultState.selectedVoice), note: getNote(), },
       );
     },
+    computed: {
+      description: function(): string | undefined {
+        const rhythm = getRhythm(this.triggersAsNumber, this.stepsAsNumber, this.rotationAsNumber);
+        return rhythm ? rhythm.description : undefined;
+      },
+    },
     watch: {
       masterClockStep: function() {
-        // console.log(this.masterClockStep)
         if (this.currentStep >= this.stepsAsNumber) {
           this.currentStep = 1;
         } else {
           this.currentStep += 1;
         }
         if (this.masterClockStep % this.stepsAsNumber === 0 && this.part && this.part.state !== 'started') {
-          // This is used only when changing steps as it allows us to await the master clock catching
-          // up to the step of this instrument.
+          // This allows us to await the master clock catching up to the step of this instrument.
           this.part.start();
           this.currentStep = 1;
         }
-        console.log(this.currentStep)
       },
       steps: function() {
         if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string' && typeof(this.rotation) !== 'string') {
           this.stepsAsNumber = this.steps;
-          const part = this.part;
-          if (part !== undefined) {
-            part.dispose();
-          }
-          // this.currentStep = 1; // Reset current step.
-          this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
+          this.generateNewPart();
         }
       },
       triggers: function() {
         if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string' && typeof(this.rotation) !== 'string') {
           this.triggersAsNumber = this.triggers;
-          if (this.part !== undefined) {
-            this.part.dispose();
-          }
-          this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
-          // this.part.start();
+          this.generateNewPart();
         }
       },
       rotation: function() {
         if (typeof(this.steps) !== 'string' && typeof(this.triggers) !== 'string' && typeof(this.rotation) !== 'string') {
           this.rotationAsNumber = this.rotation;
-          if (this.part !== undefined) {
-            this.part.dispose();
-          }
-          this.part = createPart(this.voice, this.steps, this.triggers, this.rotation, this.note);
-          // this.part.start();
+          this.generateNewPart();
         }
       },
       selectedVoice: function () {
-        // TODO: Fix this
-        // if (this.voice !== undefined) {
-        //   this.voice.dispose();
-        // }
         this.voice = getVoice(this.selectedVoice);
+        this.generateNewPart();
+      }
+    },
+    methods: {
+      generateNewPart: function() {
         if (this.part !== undefined) {
           this.part.dispose();
         }
         this.part = createPart(this.voice, this.stepsAsNumber, this.triggersAsNumber, this.rotationAsNumber, this.note);
-      }
-    }
+      },
+    },
   });
 </script>
 
@@ -167,5 +160,9 @@
   .c-instrument__form {
     display: flex;
     flex-direction: column;
+  }
+
+  .c-instrument__description {
+    margin: 0 1em;
   }
 </style>

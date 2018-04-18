@@ -33,7 +33,7 @@
   const state: State = {
     instruments: [{ _id: 0 }],
     isPlaying: true,
-    masterClockStep: 1, // Start from 1 to match how its usually counted in music.
+    masterClockStep: 0,
   };
 
   EventBus.$on('setIsPlaying', (isPlaying: boolean) => {
@@ -41,9 +41,9 @@
     isPlaying ? Tone.Transport.start() : Tone.Transport.pause();
   });
 
+  // Start transport and start tracking master clock steps.
   Tone.Transport.start();
-  Tone.Transport.scheduleRepeat(function(time: any){
-    // state.masterClockStep = state.masterClockStep === 8 ? 1 : state.masterClockStep + 1; // Working in 4/4 with 8ths.
+  Tone.Transport.scheduleRepeat(function(time: any) {
     state.masterClockStep += 1;
   }, "8n");
 
@@ -86,6 +86,8 @@
 
   .c-controls {
     display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 2em;
   }
-
 </style>

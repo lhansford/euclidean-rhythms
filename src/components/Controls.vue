@@ -1,8 +1,8 @@
 <template>
-  <button v-if="!isPlaying" @click="play">
+  <button class="c-play-button" v-if="!isPlaying" @click="play">
     <i class="far fa-play-circle"></i>
   </button>
-  <button v-else @click="stop">
+  <button class="c-play-button" v-else @click="stop">
     <i class="far fa-pause-circle"></i>
   </button>
 </template>
@@ -28,3 +28,17 @@
     }
   }
 </script>
+
+<style scoped>
+  .c-play-button {
+    -webkit-appearance: none;
+    background: none;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+    color: white;
+  }
+  .c-play-button:hover {
+    color: #FF9A00;
+  }
+</style>

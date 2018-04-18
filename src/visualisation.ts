@@ -23,3 +23,18 @@ export function getPolygonPoints(sides: number, radius: number): Array<Array<num
 export function polygonPointsToString(points: Array<Array<number>>): string {
   return points.map(x => x.join(',')).join(' ');
 }
+
+
+/**
+ * Returns an array of coordinate tuples for the current step in the visualisation.
+ * @param {number} currentStep The current step of the visualisation.
+ * @param {Array<Array<number>>} pointsArray The array of points for the entire visualisation.
+ * @returns {Array<Array<number>>}
+ */
+export function getCurrentStepPolygonPoints(currentStep: number, pointsArray: Array<Array<number>>) {
+  if (currentStep > pointsArray.length -1) {
+    return [];
+  }
+  const nextStep = currentStep > pointsArray.length - 2 ? 0 : currentStep + 1;
+  return [[100, 100], pointsArray[currentStep], pointsArray[nextStep]];
+}

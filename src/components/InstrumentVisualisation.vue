@@ -4,7 +4,6 @@
       <svg v-for="trigger in points.triggerPoints">
         <polygon :points="trigger" style="fill:black;" />
       </svg>
-      <!-- <polygon :points="points.polygonPoints" style="fill:transparent;stroke:black;stroke-width:1" /> -->
       <polygon :points="points.currentStepPoints" style="fill:#FF9A00;" />
     </svg>
   </div>
@@ -13,13 +12,8 @@
 <script lang="ts">
   import Vue from 'vue';
 
-  import { polygonPointsToString, getPolygonPoints } from './../visualisation.ts';
+  import { polygonPointsToString, getPolygonPoints, getCurrentStepPolygonPoints } from './../visualisation.ts';
   import { getEuclideanBinary } from './../euclidean.ts';
-
-  function getStepPoints(currentStep: number, pointsArray: Array<Array<number>>) {
-    const nextStep = currentStep > pointsArray.length - 2 ? 0 : currentStep + 1;
-    return [[100, 100], pointsArray[currentStep], pointsArray[nextStep]];
-  }
 
   export default Vue.extend({
     name: 'InstrumentVisualisation',
@@ -47,10 +41,10 @@
         this.pointsArray = getPolygonPoints(this.steps, 100);
         const binary = getEuclideanBinary(this.steps, this.triggers, this.rotation).split('');
         return {
-          currentStepPoints: polygonPointsToString(getStepPoints(this.currentStep - 1, this.pointsArray)),
+          currentStepPoints: polygonPointsToString(getCurrentStepPolygonPoints(this.currentStep - 1, this.pointsArray)),
           polygonPoints: polygonPointsToString(this.pointsArray),
           triggerPoints: binary
-            .map((step: string, index: number) => (step === '0' ? [] : getStepPoints(index, this.pointsArray)))
+            .map((step: string, index: number) => (step === '0' ? [] : getCurrentStepPolygonPoints(index, this.pointsArray)))
             .filter((x: Array<Array<number>>) => x.length)
             .map((x: Array<Array<number>>) => polygonPointsToString(x)),
         };
