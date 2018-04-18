@@ -1,0 +1,16 @@
+label {
+  margin-bottom: 0.5em;
+}
+
+input {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  width: 50px;
+}
+
+select, input {
+  margin-bottom: 1em;
+}
